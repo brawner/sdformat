@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <string>
 
+#include <ignition/utilities/ExtraTestMacros.hh>
+
 #include "sdf/parser.hh"
 #include "sdf/SDFImpl.hh"
 #include "sdf/sdf_config.h"
@@ -57,7 +59,7 @@ std::string custom_exec_str(std::string _cmd)
 }
 
 /////////////////////////////////////////////////
-TEST(check, SDF)
+TEST(check, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";
@@ -355,6 +357,7 @@ TEST(check, SDF)
     // Check nested_model.sdf
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+<<<<<<< HEAD
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
@@ -388,6 +391,37 @@ TEST(check, SDF)
     std::string output =
       custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
     EXPECT_NE(output.find("Error: A model must have at least one link."),
+||||||| merged common ancestors
+    EXPECT_NE(output.find("Error: Nested models are not yet supported by DOM "
+              "objects, skipping model [top_level_model]."),
+=======
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with a model that has a nested canonical link.
+  {
+    std::string path = pathBase +"/nested_canonical_link.sdf";
+
+    // Check nested_canonical_link.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an SDF file with a model that has a nested canonical link
+  // that is explicitly specified by //model/@canonical_link using ::
+  // syntax.
+  {
+    std::string path = pathBase +"/nested_invalid_explicit_canonical_link.sdf";
+
+    // Check nested_invalid_explicit_canonical_link.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: canonical_link with name[nested::link] not "
+                          "found in model with name[top]."),
+              std::string::npos) << output;
+    EXPECT_NE(output.find("Error: A model must have at least one link."),
+>>>>>>> sdf10
               std::string::npos) << output;
   }
 
@@ -562,6 +596,7 @@ TEST(check, SDF)
               std::string::npos) << output;
   }
 
+<<<<<<< HEAD
   // Check an SDF file with nested_models using the relative_to attribute.
   // This is a valid file.
   {
@@ -585,6 +620,34 @@ TEST(check, SDF)
     EXPECT_EQ("Valid.\n", output) << output;
   }
 
+||||||| merged common ancestors
+=======
+  // Check an SDF file with nested_models using the relative_to attribute.
+  // This is a valid file.
+  {
+    std::string path = pathBase +"/model_nested_model_relative_to.sdf";
+
+    // Check model_nested_model_relative_to.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_EQ("Valid.\n", output) << output;
+  }
+
+  // Check an invalid SDF file with a joint that specifies a child link
+  // within a sibling nested model using the unsupported :: syntax.
+  {
+    std::string path = pathBase +"/model_invalid_nested_joint_child.sdf";
+
+    // Check model_invalid_nested_joint_child.sdf
+    std::string output =
+      custom_exec_str(g_ignCommand + " sdf -k " + path + g_sdfVersion);
+    EXPECT_NE(output.find("Error: Child link with name[M::C] specified by "
+                          "joint with name[J] not found in model with "
+                          "name[model_invalid_nested_joint_child]."),
+              std::string::npos) << output;
+  }
+
+>>>>>>> sdf10
   // Check an SDF file with joints using the relative_to attribute.
   // This is a valid file.
   {
@@ -833,7 +896,7 @@ TEST(check_shapes_sdf, SDF)
 }
 
 /////////////////////////////////////////////////
-TEST(check_model_sdf, SDF)
+TEST(check_model_sdf, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/integration/model/box";
@@ -859,7 +922,7 @@ TEST(check_model_sdf, SDF)
 }
 
 /////////////////////////////////////////////////
-TEST(describe, SDF)
+TEST(describe, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   // Get the description
   std::string output =
@@ -871,7 +934,7 @@ TEST(describe, SDF)
 }
 
 /////////////////////////////////////////////////
-TEST(print, SDF)
+TEST(print, IGN_UTILS_TEST_DISABLED_ON_WIN32(SDF))
 {
   std::string pathBase = PROJECT_SOURCE_PATH;
   pathBase += "/test/sdf";

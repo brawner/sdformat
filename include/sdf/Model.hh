@@ -223,6 +223,7 @@ namespace sdf
     /// \return True if there exists an explicit frame with the given name.
     public: bool FrameNameExists(const std::string &_name) const;
 
+<<<<<<< HEAD
     /// \brief Get the number of nested models that are immediate (not
     /// recursively nested) children of this Model object.
     /// \remark ModelByName() can find nested models that are not immediate
@@ -253,6 +254,46 @@ namespace sdf
     ///  does not exist.
     /// \sa bool ModelNameExists(const std::string &_name) const
     public: const Model *ModelByName(const std::string &_name) const;
+||||||| merged common ancestors
+    /// \brief Get the pose of the model. This is the pose of the model
+    /// as specified in SDF (<model> <pose> ... </pose></model>), and is
+    /// typically used to express the position and rotation of a model in a
+    /// global coordinate frame.
+    /// \return The pose of the model.
+    /// \deprecated See RawPose.
+    public: const ignition::math::Pose3d &Pose() const
+        SDF_DEPRECATED(9.0);
+
+    /// \brief Set the pose of the model.
+    /// \sa const ignition::math::Pose3d &Pose() const
+    /// \param[in] _pose The new model pose.
+    /// \deprecated See SetRawPose.
+    public: void SetPose(const ignition::math::Pose3d &_pose)
+        SDF_DEPRECATED(9.0);
+=======
+    /// \brief Get the number of nested models.
+    /// \return Number of nested models contained in this Model object.
+    public: uint64_t ModelCount() const;
+
+    /// \brief Get a nested model based on an index.
+    /// \param[in] _index Index of the nested model. The index should be in the
+    /// range [0..ModelCount()).
+    /// \return Pointer to the model. Nullptr if the index does not exist.
+    /// \sa uint64_t ModelCount() const
+    public: const Model *ModelByIndex(const uint64_t _index) const;
+
+    /// \brief Get whether a nested model name exists.
+    /// \param[in] _name Name of the nested model to check.
+    /// \return True if there exists a nested model with the given name.
+    public: bool ModelNameExists(const std::string &_name) const;
+
+    /// \brief Get a nested model based on a name.
+    /// \param[in] _name Name of the nested model.
+    /// \return Pointer to the model. Nullptr if a model with the given name
+    ///  does not exist.
+    /// \sa bool ModelNameExists(const std::string &_name) const
+    public: const Model *ModelByName(const std::string &_name) const;
+>>>>>>> sdf10
 
     /// \brief Get the pose of the model. This is the pose of the model
     /// as specified in SDF (<model> <pose> ... </pose></model>), and is
@@ -305,6 +346,7 @@ namespace sdf
     /// \return SemanticPose object for this link.
     public: sdf::SemanticPose SemanticPose() const;
 
+<<<<<<< HEAD
     /// \brief Get the name of the placement frame of the model.
     /// \return Name of the placement frame attribute of the model.
     public: const std::string &PlacementFrameName() const;
@@ -341,7 +383,39 @@ namespace sdf
     /// World::SetFrameAttachedToGraph to call SetPoseRelativeToGraph and
     /// SetFrameAttachedToGraph
     friend class Root;
+||||||| merged common ancestors
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// World::Load.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    private: void SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Allow World::Load to call SetPoseRelativeToGraph.
+=======
+    /// \brief Give a weak pointer to the PoseRelativeToGraph to be used
+    /// for resolving poses. This is private and is intended to be called by
+    /// World::Load and Model::Load if this is a nested model.
+    /// \param[in] _graph Weak pointer to PoseRelativeToGraph.
+    /// \return Error if graph pointer is invalid.
+    private: sdf::Errors SetPoseRelativeToGraph(
+        std::weak_ptr<const PoseRelativeToGraph> _graph);
+
+    /// \brief Get the model's canonical link and the nested name of the link
+    /// relative to the current model, delimited by "::".
+    /// \return An immutable pointer to the canonical link and the nested
+    /// name of the link relative to the current model.
+    private: std::pair<const Link *, std::string> CanonicalLinkAndRelativeName()
+        const;
+
+    /// \brief Allow World::Load to call SetPoseRelativeToGraph.
+>>>>>>> sdf10
     friend class World;
+
+    /// \brief Allow helper function in FrameSemantics.cc to call
+    /// CanonicalLinkAndRelativeName.
+    friend std::pair<const Link *, std::string>
+        modelCanonicalLinkAndRelativeName(const Model *);
 
     /// \brief Private data pointer.
     private: ModelPrivate *dataPtr = nullptr;

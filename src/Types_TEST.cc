@@ -96,6 +96,7 @@ TEST(Types, trim_nothing)
 
   out = sdf::trim("\txyz\t");
   EXPECT_EQ(out, "xyz");
+<<<<<<< HEAD
 
   out = sdf::trim("\n    xyz    \n");
   EXPECT_EQ(out, "xyz");
@@ -118,6 +119,12 @@ TEST(Types, ErrorsOutputStream)
   std::stringstream output;
   output << errors;
   EXPECT_EQ(expected, output.str());
+||||||| merged common ancestors
+=======
+
+  out = sdf::trim("\n    xyz    \n");
+  EXPECT_EQ(out, "xyz");
+>>>>>>> sdf10
 }
 
 /////////////////////////////////////////////////

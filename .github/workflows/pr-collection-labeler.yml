@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: PR Collection Labeler
 
 on: pull_request
@@ -11,3 +12,19 @@ jobs:
       uses: ignition-tooling/pr-collection-labeler@v1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+||||||| merged common ancestors
+=======
+name: PR Collection Labeler
+
+on: pull_request_target
+
+jobs:
+  pr_collection_labeler:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Add collection labels
+      if: github.event.action == 'opened'
+      uses: ignition-tooling/pr-collection-labeler@v1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+>>>>>>> sdf10

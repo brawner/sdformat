@@ -155,7 +155,20 @@ TEST(DOMRoot, NestedModel)
   // Load the SDF file
   sdf::Root root;
   auto errors = root.Load(testFile);
+<<<<<<< HEAD
   EXPECT_TRUE(errors.empty()) << errors;
+||||||| merged common ancestors
+
+  // it should complain because nested models aren't yet supported
+  EXPECT_FALSE(errors.empty());
+  EXPECT_EQ(errors[0].Code(), sdf::ErrorCode::NESTED_MODELS_UNSUPPORTED);
+
+  EXPECT_EQ(1u, root.ModelCount());
+=======
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(1u, root.ModelCount());
+>>>>>>> sdf10
 
   // Get the first model
   const sdf::Model *model = root.Model();
@@ -176,6 +189,7 @@ TEST(DOMRoot, NestedModel)
   EXPECT_EQ(nullptr, model->JointByIndex(1));
 
   EXPECT_TRUE(model->JointNameExists("top_level_joint"));
+<<<<<<< HEAD
 
   ASSERT_EQ(1u, model->ModelCount());
   const sdf::Model *nestedModel = model->ModelByIndex(0);
@@ -381,6 +395,110 @@ TEST(DOMLink, NestedModelPoseRelativeTo)
 
   EXPECT_EQ(0u, model->FrameCount());
   EXPECT_EQ(nullptr, model->FrameByIndex(0));
+||||||| merged common ancestors
+=======
+
+  ASSERT_EQ(1u, model->ModelCount());
+  const sdf::Model *nestedModel = model->ModelByIndex(0);
+  ASSERT_NE(nullptr, nestedModel);
+  EXPECT_EQ(nullptr, model->ModelByIndex(1));
+
+  EXPECT_TRUE(model->ModelNameExists("nested_model"));
+  EXPECT_EQ(nestedModel, model->ModelByName("nested_model"));
+  EXPECT_EQ("nested_model", nestedModel->Name());
+
+  EXPECT_EQ(1u, nestedModel->LinkCount());
+  EXPECT_NE(nullptr, nestedModel->LinkByIndex(0));
+  EXPECT_EQ(nullptr, nestedModel->LinkByIndex(1));
+
+  EXPECT_TRUE(nestedModel->LinkNameExists("nested_link01"));
+
+  EXPECT_EQ(0u, nestedModel->JointCount());
+  EXPECT_EQ(0u, nestedModel->FrameCount());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMLink, NestedModelPoseRelativeTo)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "model_nested_model_relative_to.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  using Pose = ignition::math::Pose3d;
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("model_nested_model_relative_to", model->Name());
+  EXPECT_EQ(1u, model->LinkCount());
+  EXPECT_NE(nullptr, model->LinkByIndex(0));
+  EXPECT_EQ(nullptr, model->LinkByIndex(1));
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->RawPose());
+  EXPECT_EQ("", model->PoseRelativeTo());
+
+  ASSERT_TRUE(model->LinkNameExists("L"));
+  EXPECT_TRUE(model->LinkByName("L")->PoseRelativeTo().empty());
+  EXPECT_EQ(Pose(0, 0, 0, 0, 0, 0), model->LinkByName("L")->RawPose());
+
+  ASSERT_TRUE(model->ModelNameExists("M1"));
+  ASSERT_TRUE(model->ModelNameExists("M2"));
+  ASSERT_TRUE(model->ModelNameExists("M3"));
+  EXPECT_TRUE(model->ModelByName("M1")->PoseRelativeTo().empty());
+  EXPECT_TRUE(model->ModelByName("M2")->PoseRelativeTo().empty());
+  EXPECT_EQ("M1", model->ModelByName("M3")->PoseRelativeTo());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), model->ModelByName("M1")->RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), model->ModelByName("M2")->RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0), model->ModelByName("M3")->RawPose());
+
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI / 2, 0),
+            model->ModelByName("M1")->SemanticPose().RawPose());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0),
+            model->ModelByName("M2")->SemanticPose().RawPose());
+  EXPECT_EQ(Pose(3, 0, 0, 0, 0, 0),
+            model->ModelByName("M3")->SemanticPose().RawPose());
+
+  // Test SemanticPose().Resolve to get each nested model pose in the
+  // __model__ frame
+  Pose pose;
+  EXPECT_TRUE(
+    model->ModelByName("M1")->SemanticPose().Resolve(pose,
+                                                     "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(
+    model->ModelByName("M2")->SemanticPose().Resolve(pose,
+                                                     "__model__").empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(
+    model->ModelByName("M3")->SemanticPose().Resolve(pose,
+                                                     "__model__").empty());
+  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+  // test other API too
+  EXPECT_TRUE(model->ModelByName("M1")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, 0, 0, IGN_PI/2, 0), pose);
+  EXPECT_TRUE(model->ModelByName("M2")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(2, 0, 0, 0, 0, 0), pose);
+  EXPECT_TRUE(model->ModelByName("M3")->SemanticPose().Resolve(pose).empty());
+  EXPECT_EQ(Pose(1, 0, -3, 0, IGN_PI/2, 0), pose);
+
+  // resolve pose of M1 relative to M3
+  // should be inverse of M3's Pose()
+  EXPECT_TRUE(
+    model->ModelByName("M1")->SemanticPose().Resolve(pose, "M3").empty());
+  EXPECT_EQ(Pose(-3, 0, 0, 0, 0, 0), pose);
+
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(0u, model->FrameCount());
+  EXPECT_EQ(nullptr, model->FrameByIndex(0));
+>>>>>>> sdf10
 }
 
 /////////////////////////////////////////////////
@@ -415,6 +533,7 @@ TEST(DOMRoot, LoadCanonicalLink)
 
   EXPECT_EQ(0u, model->JointCount());
   EXPECT_EQ(nullptr, model->JointByIndex(0));
+<<<<<<< HEAD
 
   EXPECT_EQ(1u, model->FrameCount());
   EXPECT_NE(nullptr, model->FrameByIndex(0));
@@ -476,6 +595,70 @@ TEST(DOMRoot, LoadNestedCanonicalLink)
   EXPECT_TRUE(
       shallowModel->FrameByName("F")->ResolveAttachedToBody(body).empty());
   EXPECT_EQ("deep::deeper::deepest::deepest_link", body);
+||||||| merged common ancestors
+=======
+
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("link2", body);
+}
+
+/////////////////////////////////////////////////
+TEST(DOMRoot, LoadNestedCanonicalLink)
+{
+  const std::string testFile =
+    sdf::filesystem::append(PROJECT_SOURCE_PATH, "test", "sdf",
+        "nested_canonical_link.sdf");
+
+  // Load the SDF file
+  sdf::Root root;
+  EXPECT_TRUE(root.Load(testFile).empty());
+
+  // Get the first model
+  const sdf::Model *model = root.ModelByIndex(0);
+  ASSERT_NE(nullptr, model);
+  EXPECT_EQ("top", model->Name());
+  EXPECT_EQ(0u, model->LinkCount());
+  EXPECT_EQ(nullptr, model->LinkByIndex(0));
+
+  EXPECT_EQ(0u, model->JointCount());
+  EXPECT_EQ(nullptr, model->JointByIndex(0));
+
+  EXPECT_EQ(1u, model->FrameCount());
+  EXPECT_NE(nullptr, model->FrameByIndex(0));
+  EXPECT_EQ(nullptr, model->FrameByIndex(1));
+
+  EXPECT_EQ(2u, model->ModelCount());
+  EXPECT_TRUE(model->ModelNameExists("nested"));
+  EXPECT_TRUE(model->ModelNameExists("shallow"));
+  EXPECT_EQ(model->ModelByName("nested"), model->ModelByIndex(0));
+  EXPECT_EQ(model->ModelByName("shallow"), model->ModelByIndex(1));
+  EXPECT_EQ(nullptr, model->ModelByIndex(2));
+
+  // expect implicit canonical link
+  EXPECT_TRUE(model->CanonicalLinkName().empty());
+
+  // frame F is attached to __model__ and resolves to canonical link,
+  // which is "nested::link2"
+  std::string body;
+  EXPECT_TRUE(model->FrameByName("F")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("nested::link2", body);
+
+  EXPECT_EQ(model->ModelByName("nested")->LinkByName("link2"),
+            model->CanonicalLink());
+  // this reports the local name, not the nested name "nested::link2"
+  EXPECT_EQ("link2", model->CanonicalLink()->Name());
+
+  const sdf::Model *shallowModel = model->ModelByName("shallow");
+  EXPECT_EQ(1u, shallowModel->FrameCount());
+  EXPECT_TRUE(
+      shallowModel->FrameByName("F")->ResolveAttachedToBody(body).empty());
+  EXPECT_EQ("deep::deeper::deepest::deepest_link", body);
+>>>>>>> sdf10
 }
 
 /////////////////////////////////////////////////

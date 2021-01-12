@@ -24,7 +24,12 @@
 #include "sdf/Error.hh"
 #include "sdf/JointAxis.hh"
 #include "FrameSemantics.hh"
+<<<<<<< HEAD
 #include "ScopedGraph.hh"
+||||||| merged common ancestors
+=======
+#include "Utils.hh"
+>>>>>>> sdf10
 
 using namespace sdf;
 
@@ -224,6 +229,7 @@ sdf::Errors JointAxis::SetXyz(const ignition::math::Vector3d &_xyz)
                   "The norm of the xyz vector cannot be zero")};
   }
   this->dataPtr->xyz = _xyz;
+<<<<<<< HEAD
   this->dataPtr->xyz.Normalize();
   return sdf::Errors();
 }
@@ -237,6 +243,22 @@ bool JointAxis::UseParentModelFrame() const
 void JointAxis::SetUseParentModelFrame(const bool _parentModelFrame)
 {
   this->dataPtr->useParentModelFrame = _parentModelFrame;
+||||||| merged common ancestors
+}
+
+/////////////////////////////////////////////////
+bool JointAxis::UseParentModelFrame() const
+{
+  return this->dataPtr->useParentModelFrame;
+}
+/////////////////////////////////////////////////
+void JointAxis::SetUseParentModelFrame(const bool _parentModelFrame)
+{
+  this->dataPtr->useParentModelFrame = _parentModelFrame;
+=======
+  this->dataPtr->xyz.Normalize();
+  return sdf::Errors();
+>>>>>>> sdf10
 }
 
 /////////////////////////////////////////////////
@@ -313,7 +335,7 @@ void JointAxis::SetUpper(const double _upper) const
 /////////////////////////////////////////////////
 double JointAxis::Effort() const
 {
-  return this->dataPtr->effort;
+  return infiniteIfNegative(this->dataPtr->effort);
 }
 
 /////////////////////////////////////////////////
@@ -325,7 +347,7 @@ void JointAxis::SetEffort(double _effort)
 /////////////////////////////////////////////////
 double JointAxis::MaxVelocity() const
 {
-  return this->dataPtr->maxVelocity;
+  return infiniteIfNegative(this->dataPtr->maxVelocity);
 }
 
 /////////////////////////////////////////////////

@@ -82,11 +82,35 @@ bool readStringInternal(
     Errors &_errors);
 
 //////////////////////////////////////////////////
+/// \brief Internal helper for creating XMLDocuments
+///
+/// This creates an XMLDocument with whitespace collapse
+/// on, which is not default behavior in tinyxml2.
+/// This function is to consolidate locations it is used.
+///
+/// There is a performance impact associated with collapsing whitespace.
+///
+/// For more information on the behavior and performance implications,
+/// consult the TinyXML2 documentation: https://leethomason.github.io/tinyxml2/
+inline auto makeSdfDoc()
+{
+  return tinyxml2::XMLDocument(true, tinyxml2::COLLAPSE_WHITESPACE);
+}
+
+//////////////////////////////////////////////////
 template <typename TPtr>
 static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 {
+<<<<<<< HEAD
   tinyxml2::XMLDocument xmlDoc;
   if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
+||||||| merged common ancestors
+  TiXmlDocument xmlDoc;
+  if (xmlDoc.LoadFile(_filename))
+=======
+  auto xmlDoc = makeSdfDoc();
+  if (tinyxml2::XML_SUCCESS != xmlDoc.LoadFile(_filename.c_str()))
+>>>>>>> sdf10
   {
     sdferr << "Unable to load file["
            << _filename << "]: " << xmlDoc.ErrorStr() << "\n";
@@ -100,7 +124,13 @@ static inline bool _initFile(const std::string &_filename, TPtr _sdf)
 bool init(SDFPtr _sdf)
 {
   std::string xmldata = SDF::EmbeddedSpec("root.sdf", false);
+<<<<<<< HEAD
   tinyxml2::XMLDocument xmlDoc;
+||||||| merged common ancestors
+  TiXmlDocument xmlDoc;
+=======
+  auto xmlDoc = makeSdfDoc();
+>>>>>>> sdf10
   xmlDoc.Parse(xmldata.c_str());
   return initDoc(&xmlDoc, _sdf);
 }
@@ -111,7 +141,13 @@ bool initFile(const std::string &_filename, SDFPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
+<<<<<<< HEAD
     tinyxml2::XMLDocument xmlDoc;
+||||||| merged common ancestors
+    TiXmlDocument xmlDoc;
+=======
+    auto xmlDoc = makeSdfDoc();
+>>>>>>> sdf10
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -124,7 +160,13 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
   std::string xmldata = SDF::EmbeddedSpec(_filename, true);
   if (!xmldata.empty())
   {
+<<<<<<< HEAD
     tinyxml2::XMLDocument xmlDoc;
+||||||| merged common ancestors
+    TiXmlDocument xmlDoc;
+=======
+    auto xmlDoc = makeSdfDoc();
+>>>>>>> sdf10
     xmlDoc.Parse(xmldata.c_str());
     return initDoc(&xmlDoc, _sdf);
   }
@@ -134,8 +176,17 @@ bool initFile(const std::string &_filename, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool initString(const std::string &_xmlString, SDFPtr _sdf)
 {
+<<<<<<< HEAD
   tinyxml2::XMLDocument xmlDoc;
   if (xmlDoc.Parse(_xmlString.c_str()))
+||||||| merged common ancestors
+  TiXmlDocument xmlDoc;
+  xmlDoc.Parse(_xmlString.c_str());
+  if (xmlDoc.Error())
+=======
+  auto xmlDoc = makeSdfDoc();
+  if (xmlDoc.Parse(_xmlString.c_str()))
+>>>>>>> sdf10
   {
     sdferr << "Failed to parse string as XML: " << xmlDoc.ErrorStr() << '\n';
     return false;
@@ -393,7 +444,13 @@ bool readFileWithoutConversion(
 bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
       const bool _convert, Errors &_errors)
 {
+<<<<<<< HEAD
   tinyxml2::XMLDocument xmlDoc;
+||||||| merged common ancestors
+  TiXmlDocument xmlDoc;
+=======
+  auto xmlDoc = makeSdfDoc();
+>>>>>>> sdf10
   std::string filename = sdf::findFile(_filename, true, true);
 
   if (filename.empty())
@@ -429,8 +486,15 @@ bool readFileInternal(const std::string &_filename, SDFPtr _sdf,
   else if (URDF2SDF::IsURDF(filename))
   {
     URDF2SDF u2g;
+<<<<<<< HEAD
     tinyxml2::XMLDocument doc;
     u2g.InitModelFile(filename, &doc);
+||||||| merged common ancestors
+    TiXmlDocument doc = u2g.InitModelFile(filename);
+=======
+    auto doc = makeSdfDoc();
+    u2g.InitModelFile(filename, &doc);
+>>>>>>> sdf10
     if (sdf::readDoc(&doc, _sdf, "urdf file", _convert, _errors))
     {
       sdfdbg << "parse from urdf file [" << _filename << "].\n";
@@ -476,7 +540,13 @@ bool readStringWithoutConversion(
 bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
     const bool _convert, Errors &_errors)
 {
+<<<<<<< HEAD
   tinyxml2::XMLDocument xmlDoc;
+||||||| merged common ancestors
+  TiXmlDocument xmlDoc;
+=======
+  auto xmlDoc = makeSdfDoc();
+>>>>>>> sdf10
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
@@ -490,9 +560,18 @@ bool readStringInternal(const std::string &_xmlString, SDFPtr _sdf,
   else
   {
     URDF2SDF u2g;
+<<<<<<< HEAD
     tinyxml2::XMLDocument doc;
     u2g.InitModelString(_xmlString, &doc);
 
+||||||| merged common ancestors
+    SDF_SUPPRESS_DEPRECATED_END
+    TiXmlDocument doc = u2g.InitModelString(_xmlString);
+=======
+    auto doc = makeSdfDoc();
+    u2g.InitModelString(_xmlString, &doc);
+
+>>>>>>> sdf10
     if (sdf::readDoc(&doc, _sdf, "urdf string", _convert, _errors))
     {
       sdfdbg << "Parsing from urdf.\n";
@@ -524,7 +603,13 @@ bool readString(const std::string &_xmlString, ElementPtr _sdf)
 //////////////////////////////////////////////////
 bool readString(const std::string &_xmlString, ElementPtr _sdf, Errors &_errors)
 {
+<<<<<<< HEAD
   tinyxml2::XMLDocument xmlDoc;
+||||||| merged common ancestors
+  TiXmlDocument xmlDoc;
+=======
+  auto xmlDoc = makeSdfDoc();
+>>>>>>> sdf10
   xmlDoc.Parse(_xmlString.c_str());
   if (xmlDoc.Error())
   {
@@ -761,7 +846,8 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     if (!sdf::filesystem::exists(configFilePath))
     {
       // We didn't find manifest.xml either, output an error and get out.
-      sdferr << "Could not find model.config or manifest.xml for the model\n";
+      sdferr << "Could not find model.config or manifest.xml in ["
+             << _modelDirPath << "]\n";
       return std::string();
     }
     else
@@ -773,8 +859,16 @@ std::string getModelFilePath(const std::string &_modelDirPath)
     }
   }
 
+<<<<<<< HEAD
   tinyxml2::XMLDocument configFileDoc;
   if (tinyxml2::XML_SUCCESS != configFileDoc.LoadFile(configFilePath.c_str()))
+||||||| merged common ancestors
+  TiXmlDocument configFileDoc;
+  if (!configFileDoc.LoadFile(configFilePath))
+=======
+  auto configFileDoc = makeSdfDoc();
+  if (tinyxml2::XML_SUCCESS != configFileDoc.LoadFile(configFilePath.c_str()))
+>>>>>>> sdf10
   {
     sdferr << "Error parsing XML in file ["
            << configFilePath << "]: "
@@ -840,6 +934,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
     _sdf->Copy(refSDF);
   }
 
+<<<<<<< HEAD
   // A list of parent element-attributes pairs where a frame name is referenced
   // in the attribute. This is used to check if the reference is invalid.
   std::set<std::pair<std::string, std::string>> frameReferenceAttributes {
@@ -855,6 +950,11 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
       {"custom_rpy", "parent_frame"}};
 
   const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
+||||||| merged common ancestors
+  TiXmlAttribute *attribute = _xml->FirstAttribute();
+=======
+  const tinyxml2::XMLAttribute *attribute = _xml->FirstAttribute();
+>>>>>>> sdf10
 
   unsigned int i = 0;
 
@@ -863,7 +963,7 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
   {
     // Avoid printing a warning message for missing attributes if a namespaced
     // attribute is found
-    if (std::strchr(attribute->Name(), ':') != NULL)
+    if (std::strchr(attribute->Name(), ':') != nullptr)
     {
       _sdf->AddAttribute(attribute->Name(), "string", "", 1, "");
       _sdf->GetAttribute(attribute->Name())->SetFromString(
@@ -971,6 +1071,15 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 
           // Get the config.xml filename
           filename = getModelFilePath(modelPath);
+
+          if (filename.empty())
+          {
+            _errors.push_back({ErrorCode::URI_LOOKUP,
+                "Unable to resolve uri[" + uri + "] to model path [" +
+                modelPath + "] since it does not contain a model.config " +
+                "file."});
+            continue;
+          }
         }
         else
         {
@@ -1161,7 +1270,8 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
         }
       }
 
-      if (descCounter == _sdf->GetElementDescriptionCount())
+      if (descCounter == _sdf->GetElementDescriptionCount()
+            && std::strchr(elemXml->Value(), ':') == nullptr)
       {
         sdfdbg << "XML Element[" << elemXml->Value()
                << "], child of element[" << _xml->Value()
@@ -1206,9 +1316,57 @@ bool readXml(tinyxml2::XMLElement *_xml, ElementPtr _sdf, Errors &_errors)
 }
 
 /////////////////////////////////////////////////
+<<<<<<< HEAD
 void copyChildren(ElementPtr _sdf,
                   tinyxml2::XMLElement *_xml,
                   const bool _onlyUnknown)
+||||||| merged common ancestors
+static void replace_all(std::string &_str,
+                        const std::string &_from,
+                        const std::string &_to)
+{
+  if (_from.empty())
+  {
+    return;
+  }
+  size_t start_pos = 0;
+  while ((start_pos = _str.find(_from, start_pos)) != std::string::npos)
+  {
+    _str.replace(start_pos, _from.length(), _to);
+    // We need to advance our starting position beyond what we
+    // just replaced to deal with the case where the '_to' string
+    // happens to contain a piece of '_from'.
+    start_pos += _to.length();
+  }
+}
+
+/////////////////////////////////////////////////
+void copyChildren(ElementPtr _sdf, TiXmlElement *_xml, const bool _onlyUnknown)
+=======
+static void replace_all(std::string &_str,
+                        const std::string &_from,
+                        const std::string &_to)
+{
+  if (_from.empty())
+  {
+    return;
+  }
+  size_t start_pos = 0;
+  while ((start_pos = _str.find(_from, start_pos)) != std::string::npos)
+  {
+    _str.replace(start_pos, _from.length(), _to);
+    // We need to advance our starting position beyond what we
+    // just replaced to deal with the case where the '_to' string
+    // happens to contain a piece of '_from'.
+    start_pos += _to.length();
+  }
+}
+
+/////////////////////////////////////////////////
+void copyChildren(ElementPtr _sdf,
+                  tinyxml2::XMLElement *_xml,
+                  const bool _onlyUnknown)
+>>>>>>> sdf10
 {
   // Iterate over all the child elements
   tinyxml2::XMLElement *elemXml = nullptr;
@@ -1265,6 +1423,281 @@ void copyChildren(ElementPtr _sdf,
 }
 
 /////////////////////////////////////////////////
+<<<<<<< HEAD
+||||||| merged common ancestors
+void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
+{
+  Errors errors;
+  addNestedModel(_sdf, _includeSDF, errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e << '\n';
+  }
+}
+
+/////////////////////////////////////////////////
+void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
+{
+  ElementPtr modelPtr = _includeSDF->GetElement("model");
+  ElementPtr elem = modelPtr->GetFirstElement();
+  std::map<std::string, std::string> replace;
+
+  ignition::math::Pose3d modelPose =
+    modelPtr->Get<ignition::math::Pose3d>("pose");
+
+  std::string modelName = modelPtr->Get<std::string>("name");
+
+  // Inject a frame to represent the nested __model__ frame.
+  ElementPtr nestedModelFrame = _sdf->AddElement("frame");
+  const std::string nestedModelFrameName = modelName + "::__model__";
+  nestedModelFrame->GetAttribute("name")->Set(nestedModelFrameName);
+
+  replace["__model__"] = nestedModelFrameName;
+
+  std::string canonicalLinkName = "";
+  if (modelPtr->GetAttribute("canonical_link")->GetSet())
+  {
+    canonicalLinkName = modelPtr->GetAttribute("canonical_link")->GetAsString();
+  }
+  else if (modelPtr->HasElement("link"))
+  {
+    canonicalLinkName =
+      modelPtr->GetElement("link")->GetAttribute("name")->GetAsString();
+  }
+  nestedModelFrame->GetAttribute("attached_to")
+      ->Set(modelName + "::" + canonicalLinkName);
+
+  ElementPtr nestedModelFramePose = nestedModelFrame->AddElement("pose");
+  nestedModelFramePose->Set(modelPose);
+
+  // Set the nestedModelFrame's //pose/@relative_to to the frame used in
+  // //include/pose/@relative_to.
+  std::string modelPoseRelativeTo = "";
+  if (modelPtr->HasElement("pose"))
+  {
+    modelPoseRelativeTo =
+        modelPtr->GetElement("pose")->Get<std::string>("relative_to");
+  }
+
+  // If empty, use "__model__", since leaving it empty would make it
+  // relative_to the canonical link frame specified in //frame/@attached_to.
+  if (modelPoseRelativeTo.empty())
+  {
+    modelPoseRelativeTo = "__model__";
+  }
+
+  nestedModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
+
+  while (elem)
+  {
+    if ((elem->GetName() == "link") ||
+        (elem->GetName() == "joint") ||
+        (elem->GetName() == "frame"))
+    {
+      std::string elemName = elem->Get<std::string>("name");
+      std::string newName =  modelName + "::" + elemName;
+      replace[elemName] = newName;
+    }
+
+    if ((elem->GetName() == "link"))
+    {
+      // Add a pose element even if the element doesn't originally have one
+      auto elemPose = elem->GetElement("pose");
+
+      // If //pose/@relative_to is empty, explicitly set it to the name
+      // of the nested model frame.
+      auto relativeTo = elemPose->GetAttribute("relative_to");
+      if (relativeTo->GetAsString().empty())
+      {
+        relativeTo->Set(nestedModelFrameName);
+      }
+
+      // If //pose/@relative_to is set, let the replacement step handle it.
+    }
+    else if (elem->GetName() == "frame")
+    {
+      // If //frame/@attached_to is empty, explicitly set it to the name
+      // of the nested model frame.
+      auto attachedTo = elem->GetAttribute("attached_to");
+      if (attachedTo->GetAsString().empty())
+      {
+        attachedTo->Set(nestedModelFrameName);
+      }
+
+      // If //frame/@attached_to is set, let the replacement step handle it.
+    }
+    elem = elem->GetNextElement();
+  }
+
+  std::string str = _includeSDF->ToString("");
+  for (std::map<std::string, std::string>::iterator iter = replace.begin();
+       iter != replace.end(); ++iter)
+  {
+    replace_all(str, std::string("\"") + iter->first + "\"",
+                std::string("\"") + iter->second + "\"");
+    replace_all(str, std::string("'") + iter->first + "'",
+                std::string("'") + iter->second + "'");
+    replace_all(str, std::string(">") + iter->first + "<",
+                std::string(">") + iter->second + "<");
+  }
+
+  _includeSDF->ClearElements();
+  readString(str, _includeSDF, _errors);
+
+  elem = _includeSDF->GetElement("model")->GetFirstElement();
+  ElementPtr nextElem;
+  while (elem)
+  {
+    nextElem = elem->GetNextElement();
+
+    if (elem->GetName() != "pose")
+    {
+      elem->SetParent(_sdf);
+      _sdf->InsertElement(elem);
+    }
+    elem = nextElem;
+  }
+}
+
+/////////////////////////////////////////////////
+=======
+void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF)
+{
+  Errors errors;
+  addNestedModel(_sdf, _includeSDF, errors);
+  for (const auto &e : errors)
+  {
+    sdferr << e << '\n';
+  }
+}
+
+/////////////////////////////////////////////////
+void addNestedModel(ElementPtr _sdf, ElementPtr _includeSDF, Errors &_errors)
+{
+  ElementPtr modelPtr = _includeSDF->GetElement("model");
+  ElementPtr elem = modelPtr->GetFirstElement();
+  std::map<std::string, std::string> replace;
+
+  ignition::math::Pose3d modelPose =
+    modelPtr->Get<ignition::math::Pose3d>("pose");
+
+  std::string modelName = modelPtr->Get<std::string>("name");
+
+  // Inject a frame to represent the nested __model__ frame.
+  ElementPtr nestedModelFrame = _sdf->AddElement("frame");
+  const std::string nestedModelFrameName = modelName + "::__model__";
+  nestedModelFrame->GetAttribute("name")->Set(nestedModelFrameName);
+
+  replace["__model__"] = nestedModelFrameName;
+
+  std::string canonicalLinkName = "";
+  if (modelPtr->GetAttribute("canonical_link")->GetSet())
+  {
+    canonicalLinkName = modelPtr->GetAttribute("canonical_link")->GetAsString();
+  }
+  else if (modelPtr->HasElement("link"))
+  {
+    canonicalLinkName =
+      modelPtr->GetElement("link")->GetAttribute("name")->GetAsString();
+  }
+  nestedModelFrame->GetAttribute("attached_to")
+      ->Set(modelName + "::" + canonicalLinkName);
+
+  ElementPtr nestedModelFramePose = nestedModelFrame->AddElement("pose");
+  nestedModelFramePose->Set(modelPose);
+
+  // Set the nestedModelFrame's //pose/@relative_to to the frame used in
+  // //include/pose/@relative_to.
+  std::string modelPoseRelativeTo = "";
+  if (modelPtr->HasElement("pose"))
+  {
+    modelPoseRelativeTo =
+        modelPtr->GetElement("pose")->Get<std::string>("relative_to");
+  }
+
+  // If empty, use "__model__", since leaving it empty would make it
+  // relative_to the canonical link frame specified in //frame/@attached_to.
+  if (modelPoseRelativeTo.empty())
+  {
+    modelPoseRelativeTo = "__model__";
+  }
+
+  nestedModelFramePose->GetAttribute("relative_to")->Set(modelPoseRelativeTo);
+
+  while (elem)
+  {
+    if ((elem->GetName() == "link") ||
+        (elem->GetName() == "model") ||
+        (elem->GetName() == "joint") ||
+        (elem->GetName() == "frame"))
+    {
+      std::string elemName = elem->Get<std::string>("name");
+      std::string newName =  modelName + "::" + elemName;
+      replace[elemName] = newName;
+    }
+
+    if ((elem->GetName() == "link") || (elem->GetName() == "model"))
+    {
+      // Add a pose element even if the element doesn't originally have one
+      auto elemPose = elem->GetElement("pose");
+
+      // If //pose/@relative_to is empty, explicitly set it to the name
+      // of the nested model frame.
+      auto relativeTo = elemPose->GetAttribute("relative_to");
+      if (relativeTo->GetAsString().empty())
+      {
+        relativeTo->Set(nestedModelFrameName);
+      }
+
+      // If //pose/@relative_to is set, let the replacement step handle it.
+    }
+    else if (elem->GetName() == "frame")
+    {
+      // If //frame/@attached_to is empty, explicitly set it to the name
+      // of the nested model frame.
+      auto attachedTo = elem->GetAttribute("attached_to");
+      if (attachedTo->GetAsString().empty())
+      {
+        attachedTo->Set(nestedModelFrameName);
+      }
+
+      // If //frame/@attached_to is set, let the replacement step handle it.
+    }
+    elem = elem->GetNextElement();
+  }
+
+  std::string str = _includeSDF->ToString("");
+  for (std::map<std::string, std::string>::iterator iter = replace.begin();
+       iter != replace.end(); ++iter)
+  {
+    replace_all(str, std::string("\"") + iter->first + "\"",
+                std::string("\"") + iter->second + "\"");
+    replace_all(str, std::string("'") + iter->first + "'",
+                std::string("'") + iter->second + "'");
+    replace_all(str, std::string(">") + iter->first + "<",
+                std::string(">") + iter->second + "<");
+  }
+
+  _includeSDF->ClearElements();
+  readString(str, _includeSDF, _errors);
+
+  elem = _includeSDF->GetElement("model")->GetFirstElement();
+  ElementPtr nextElem;
+  while (elem)
+  {
+    nextElem = elem->GetNextElement();
+
+    if (elem->GetName() != "pose")
+    {
+      elem->SetParent(_sdf);
+      _sdf->InsertElement(elem);
+    }
+    elem = nextElem;
+  }
+}
+
+/////////////////////////////////////////////////
+>>>>>>> sdf10
 bool convertFile(const std::string &_filename, const std::string &_version,
                  SDFPtr _sdf)
 {
@@ -1282,8 +1715,16 @@ bool convertFile(const std::string &_filename, const std::string &_version,
     return false;
   }
 
+<<<<<<< HEAD
   tinyxml2::XMLDocument xmlDoc;
   if (!xmlDoc.LoadFile(filename.c_str()))
+||||||| merged common ancestors
+  TiXmlDocument xmlDoc;
+  if (xmlDoc.LoadFile(filename))
+=======
+  auto xmlDoc = makeSdfDoc();
+  if (!xmlDoc.LoadFile(filename.c_str()))
+>>>>>>> sdf10
   {
     // read initial sdf version
     std::string originalVersion;
@@ -1327,7 +1768,13 @@ bool convertString(const std::string &_sdfString, const std::string &_version,
     return false;
   }
 
+<<<<<<< HEAD
   tinyxml2::XMLDocument xmlDoc;
+||||||| merged common ancestors
+  TiXmlDocument xmlDoc;
+=======
+  auto xmlDoc = makeSdfDoc();
+>>>>>>> sdf10
   xmlDoc.Parse(_sdfString.c_str());
 
   if (!xmlDoc.Error())

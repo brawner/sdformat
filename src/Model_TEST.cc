@@ -48,6 +48,7 @@ TEST(DOMModel, Construction)
   model.SetEnableWind(true);
   EXPECT_TRUE(model.EnableWind());
 
+<<<<<<< HEAD
   EXPECT_EQ(0u, model.ModelCount());
   EXPECT_EQ(nullptr, model.ModelByIndex(0));
   EXPECT_EQ(nullptr, model.ModelByIndex(1));
@@ -62,14 +63,31 @@ TEST(DOMModel, Construction)
   EXPECT_FALSE(model.ModelNameExists("a::b::c"));
   EXPECT_FALSE(model.ModelNameExists("::::"));
 
+||||||| merged common ancestors
+=======
+  EXPECT_EQ(0u, model.ModelCount());
+  EXPECT_EQ(nullptr, model.ModelByIndex(0));
+  EXPECT_EQ(nullptr, model.ModelByIndex(1));
+  EXPECT_EQ(nullptr, model.ModelByName(""));
+  EXPECT_EQ(nullptr, model.ModelByName("default"));
+  EXPECT_FALSE(model.ModelNameExists(""));
+  EXPECT_FALSE(model.ModelNameExists("default"));
+
+>>>>>>> sdf10
   EXPECT_EQ(0u, model.LinkCount());
   EXPECT_EQ(nullptr, model.LinkByIndex(0));
   EXPECT_EQ(nullptr, model.LinkByIndex(1));
+<<<<<<< HEAD
   EXPECT_EQ(nullptr, model.LinkByName(""));
   EXPECT_EQ(nullptr, model.LinkByName("default"));
   EXPECT_EQ(nullptr, model.LinkByName("a::b"));
   EXPECT_EQ(nullptr, model.LinkByName("a::b::c"));
   EXPECT_EQ(nullptr, model.LinkByName("::::"));
+||||||| merged common ancestors
+=======
+  EXPECT_EQ(nullptr, model.LinkByName(""));
+  EXPECT_EQ(nullptr, model.LinkByName("default"));
+>>>>>>> sdf10
   EXPECT_FALSE(model.LinkNameExists(""));
   EXPECT_FALSE(model.LinkNameExists("default"));
   EXPECT_FALSE(model.LinkNameExists("a::b"));
@@ -79,11 +97,17 @@ TEST(DOMModel, Construction)
   EXPECT_EQ(0u, model.JointCount());
   EXPECT_EQ(nullptr, model.JointByIndex(0));
   EXPECT_EQ(nullptr, model.JointByIndex(1));
+<<<<<<< HEAD
   EXPECT_EQ(nullptr, model.JointByName(""));
   EXPECT_EQ(nullptr, model.JointByName("default"));
   EXPECT_EQ(nullptr, model.JointByName("a::b"));
   EXPECT_EQ(nullptr, model.JointByName("a::b::c"));
   EXPECT_EQ(nullptr, model.JointByName("::::"));
+||||||| merged common ancestors
+=======
+  EXPECT_EQ(nullptr, model.JointByName(""));
+  EXPECT_EQ(nullptr, model.JointByName("default"));
+>>>>>>> sdf10
   EXPECT_FALSE(model.JointNameExists(""));
   EXPECT_FALSE(model.JointNameExists("default"));
   EXPECT_FALSE(model.JointNameExists("a::b"));
@@ -93,11 +117,17 @@ TEST(DOMModel, Construction)
   EXPECT_EQ(0u, model.FrameCount());
   EXPECT_EQ(nullptr, model.FrameByIndex(0));
   EXPECT_EQ(nullptr, model.FrameByIndex(1));
+<<<<<<< HEAD
   EXPECT_EQ(nullptr, model.FrameByName(""));
   EXPECT_EQ(nullptr, model.FrameByName("default"));
   EXPECT_EQ(nullptr, model.FrameByName("a::b"));
   EXPECT_EQ(nullptr, model.FrameByName("a::b::c"));
   EXPECT_EQ(nullptr, model.FrameByName("::::"));
+||||||| merged common ancestors
+=======
+  EXPECT_EQ(nullptr, model.FrameByName(""));
+  EXPECT_EQ(nullptr, model.FrameByName("default"));
+>>>>>>> sdf10
   EXPECT_FALSE(model.FrameNameExists(""));
   EXPECT_FALSE(model.FrameNameExists("default"));
   EXPECT_FALSE(model.FrameNameExists("a::b"));

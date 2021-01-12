@@ -322,6 +322,91 @@ Errors World::Load(sdf::ElementPtr _sdf)
     errors.insert(errors.end(), sceneLoadErrors.begin(), sceneLoadErrors.end());
   }
 
+<<<<<<< HEAD
+||||||| merged common ancestors
+  // Build the graphs.
+  this->dataPtr->frameAttachedToGraph =
+      std::make_shared<FrameAttachedToGraph>();
+  Errors frameAttachedToGraphErrors =
+  buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
+  errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                              frameAttachedToGraphErrors.end());
+  Errors validateFrameAttachedGraphErrors =
+    validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+  errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                              validateFrameAttachedGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  }
+
+  this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
+  Errors poseRelativeToGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph, this);
+  errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
+                              poseRelativeToGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+
+=======
+  // Build the graphs.
+  this->dataPtr->frameAttachedToGraph =
+      std::make_shared<FrameAttachedToGraph>();
+  Errors frameAttachedToGraphErrors =
+  buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
+  errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                              frameAttachedToGraphErrors.end());
+  Errors validateFrameAttachedGraphErrors =
+    validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+  errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                              validateFrameAttachedGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+  }
+
+  this->dataPtr->poseRelativeToGraph = std::make_shared<PoseRelativeToGraph>();
+  Errors poseRelativeToGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph, this);
+  errors.insert(errors.end(), poseRelativeToGraphErrors.begin(),
+                              poseRelativeToGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseRelativeToGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    Errors setPoseRelativeToGraphErrors =
+      model.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
+                                setPoseRelativeToGraphErrors.end());
+  }
+  for (auto &light : this->dataPtr->lights)
+  {
+    light.SetXmlParentName("world");
+    light.SetPoseRelativeToGraph(this->dataPtr->poseRelativeToGraph);
+  }
+
+>>>>>>> sdf10
   return errors;
 }
 

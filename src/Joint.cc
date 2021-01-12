@@ -367,6 +367,7 @@ void Joint::SetRawPose(const ignition::math::Pose3d &_pose)
 }
 
 /////////////////////////////////////////////////
+<<<<<<< HEAD
 void Joint::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
@@ -375,6 +376,17 @@ void Joint::SetPoseRelativeTo(const std::string &_frame)
 /////////////////////////////////////////////////
 void Joint::SetFrameAttachedToGraph(
     sdf::ScopedGraph<FrameAttachedToGraph> _graph)
+||||||| merged common ancestors
+void Joint::SetPoseFrame(const std::string &_frame)
+{
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Joint::SetPoseRelativeTo(const std::string &_frame)
+=======
+void Joint::SetPoseRelativeTo(const std::string &_frame)
+>>>>>>> sdf10
 {
   this->dataPtr->frameAttachedToGraph = _graph;
 }

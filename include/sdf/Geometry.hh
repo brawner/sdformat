@@ -32,7 +32,12 @@ namespace sdf
   class Box;
   class Capsule;
   class Cylinder;
+<<<<<<< HEAD
   class Ellipsoid;
+||||||| merged common ancestors
+=======
+  class Heightmap;
+>>>>>>> sdf10
   class Mesh;
   class Plane;
   class Sphere;
@@ -58,12 +63,19 @@ namespace sdf
 
     /// \brief A mesh geometry.
     MESH = 5,
+<<<<<<< HEAD
 
     /// \brief A capsule geometry.
     CAPSULE = 7,
 
     /// \brief An ellipsoid geometry
     ELLIPSOID = 8,
+||||||| merged common ancestors
+=======
+
+    /// \brief A heightmap geometry.
+    HEIGHTMAP = 6,
+>>>>>>> sdf10
   };
 
   /// \brief Geometry provides access to a shape, such as a Box. Use the
@@ -188,6 +200,17 @@ namespace sdf
     /// \brief Set the mesh shape.
     /// \param[in] _mesh The mesh shape.
     public: void SetMeshShape(const Mesh &_mesh);
+
+    /// \brief Get the heightmap geometry, or nullptr if the contained geometry
+    /// is not a heightmap.
+    /// \return Pointer to the heightmap geometry, or nullptr if the geometry is
+    /// not a heightmap.
+    /// \sa GeometryType Type() const
+    public: const Heightmap *HeightmapShape() const;
+
+    /// \brief Set the heightmap shape.
+    /// \param[in] _heightmap The heightmap shape.
+    public: void SetHeightmapShape(const Heightmap &_heightmap);
 
     /// \brief Get a pointer to the SDF element that was used during
     /// load.

@@ -21,8 +21,13 @@ set (sources
   Converter.cc
   Cylinder.cc
   Element.cc
+<<<<<<< HEAD
   Ellipsoid.cc
   EmbeddedSdf.cc
+||||||| merged common ancestors
+=======
+  EmbeddedSdf.cc
+>>>>>>> sdf10
   Error.cc
   Exception.cc
   Frame.cc
@@ -31,6 +36,7 @@ set (sources
   ForceTorque.cc
   Geometry.cc
   Gui.cc
+  Heightmap.cc
   ign.cc
   Imu.cc
   Joint.cc
@@ -55,6 +61,7 @@ set (sources
   SDFExtension.cc
   SemanticPose.cc
   Sensor.cc
+  Sky.cc
   Sphere.cc
   Surface.cc
   Types.cc
@@ -80,6 +87,7 @@ else()
   include_directories(${URDF_INCLUDE_DIRS})
 endif()
 
+<<<<<<< HEAD
 if (BUILD_SDF_TEST)
   set (gtest_sources
     Actor_TEST.cc
@@ -127,6 +135,105 @@ if (BUILD_SDF_TEST)
     Types_TEST.cc
     Visual_TEST.cc
     World_TEST.cc
+||||||| merged common ancestors
+set (gtest_sources
+  Actor_TEST.cc
+  AirPressure_TEST.cc
+  Altimeter_TEST.cc
+  Atmosphere_TEST.cc
+  Box_TEST.cc
+  Camera_TEST.cc
+  Collision_TEST.cc
+  Console_TEST.cc
+  Cylinder_TEST.cc
+  Element_TEST.cc
+  Error_TEST.cc
+  Exception_TEST.cc
+  Frame_TEST.cc
+  Filesystem_TEST.cc
+  Geometry_TEST.cc
+  Gui_TEST.cc
+  Imu_TEST.cc
+  Joint_TEST.cc
+  JointAxis_TEST.cc
+  Lidar_TEST.cc
+  Light_TEST.cc
+  Link_TEST.cc
+  Magnetometer_TEST.cc
+  Material_TEST.cc
+  Mesh_TEST.cc
+  Model_TEST.cc
+  Noise_TEST.cc
+  parser_urdf_TEST.cc
+  Param_TEST.cc
+  parser_TEST.cc
+  Pbr_TEST.cc
+  Physics_TEST.cc
+  Plane_TEST.cc
+  Root_TEST.cc
+  Scene_TEST.cc
+  SemanticPose_TEST.cc
+  SDF_TEST.cc
+  Sensor_TEST.cc
+  Sphere_TEST.cc
+  Surface_TEST.cc
+  Types_TEST.cc
+  Visual_TEST.cc
+  World_TEST.cc
+)
+
+# Build this test file only if Ignition Tools is installed.
+if (IGNITION-TOOLS_BINARY_DIRS)
+  set (gtest_sources ${gtest_sources}
+    ign_TEST.cc
+=======
+if (BUILD_SDF_TEST)
+  set (gtest_sources
+    Actor_TEST.cc
+    AirPressure_TEST.cc
+    Altimeter_TEST.cc
+    Atmosphere_TEST.cc
+    Box_TEST.cc
+    Camera_TEST.cc
+    Collision_TEST.cc
+    Console_TEST.cc
+    Cylinder_TEST.cc
+    Element_TEST.cc
+    Error_TEST.cc
+    Exception_TEST.cc
+    Frame_TEST.cc
+    Filesystem_TEST.cc
+    Geometry_TEST.cc
+    Gui_TEST.cc
+    Heightmap_TEST.cc
+    Imu_TEST.cc
+    Joint_TEST.cc
+    JointAxis_TEST.cc
+    Lidar_TEST.cc
+    Light_TEST.cc
+    Link_TEST.cc
+    Magnetometer_TEST.cc
+    Material_TEST.cc
+    Mesh_TEST.cc
+    Model_TEST.cc
+    Noise_TEST.cc
+    Param_TEST.cc
+    parser_TEST.cc
+    Pbr_TEST.cc
+    Physics_TEST.cc
+    Plane_TEST.cc
+    Root_TEST.cc
+    Scene_TEST.cc
+    SemanticPose_TEST.cc
+    SDF_TEST.cc
+    Sensor_TEST.cc
+    Sky_TEST.cc
+    Sphere_TEST.cc
+    Surface_TEST.cc
+    Types_TEST.cc
+    Visual_TEST.cc
+    World_TEST.cc
+>>>>>>> sdf10
   )
 
   # Build this test file only if Ignition Tools is installed.
@@ -138,6 +245,64 @@ if (BUILD_SDF_TEST)
 
   sdf_build_tests(${gtest_sources})
 
+<<<<<<< HEAD
+  if (NOT WIN32)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
+    sdf_build_tests(Utils_TEST.cc)
+  endif()
+||||||| merged common ancestors
+if (NOT WIN32)
+  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
+  sdf_build_tests(FrameSemantics_TEST.cc)
+endif()
+=======
+  if (TARGET UNIT_ign_TEST)
+    # Link the libraries that we always need.
+    target_link_libraries("UNIT_ign_TEST"
+      PUBLIC
+        ignition-cmake${IGN_CMAKE_VER}::utilities
+    )
+  endif()
+>>>>>>> sdf10
+
+<<<<<<< HEAD
+  if (NOT WIN32)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS XmlUtils.cc)
+    sdf_build_tests(XmlUtils_TEST.cc)
+    target_link_libraries(UNIT_XmlUtils_TEST PRIVATE
+      ${TinyXML2_LIBRARIES})
+  endif()
+
+  if (NOT WIN32)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS FrameSemantics.cc)
+    sdf_build_tests(FrameSemantics_TEST.cc)
+  endif()
+
+  if (NOT WIN32)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc EmbeddedSdf.cc XmlUtils.cc)
+    sdf_build_tests(Converter_TEST.cc)
+    target_link_libraries(UNIT_Converter_TEST PRIVATE
+      ${TinyXML2_LIBRARIES})
+  endif()
+
+  if (NOT WIN32)
+    set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS SDFExtension.cc parser_urdf.cc XmlUtils.cc)
+    sdf_build_tests(parser_urdf_TEST.cc)
+    if (NOT USE_INTERNAL_URDF)
+      target_compile_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_CFLAGS})
+      if (${CMAKE_VERSION} VERSION_GREATER 3.13)
+        target_link_options(UNIT_parser_urdf_TEST PRIVATE ${URDF_LDFLAGS})
+      endif()
+      target_link_libraries(UNIT_parser_urdf_TEST PRIVATE ${URDF_LIBRARIES})
+    endif()
+    target_link_libraries(UNIT_parser_urdf_TEST PRIVATE
+      ${TinyXML2_LIBRARIES})
+  endif()
+||||||| merged common ancestors
+if (NOT WIN32)
+  set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Converter.cc)
+  sdf_build_tests(Converter_TEST.cc)
+=======
   if (NOT WIN32)
     set(SDF_BUILD_TESTS_EXTRA_EXE_SRCS Utils.cc)
     sdf_build_tests(Utils_TEST.cc)
@@ -175,6 +340,7 @@ if (BUILD_SDF_TEST)
     target_link_libraries(UNIT_parser_urdf_TEST PRIVATE
       ${TinyXML2_LIBRARIES})
   endif()
+>>>>>>> sdf10
 endif()
 
 sdf_add_library(${sdf_target} ${sources})

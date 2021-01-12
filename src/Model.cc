@@ -83,8 +83,19 @@ class sdf::ModelPrivate
   /// \brief Scoped Pose Relative-To graph at the parent model or world scope.
   public: sdf::ScopedGraph<sdf::PoseRelativeToGraph> poseGraph;
 
+<<<<<<< HEAD
   /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
   public: std::string poseGraphScopeVertexName;
+||||||| merged common ancestors
+  /// \brief Pose Relative-To Graph in parent (world) scope.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
+=======
+  /// \brief Pose Relative-To Graph in parent (world or __model__) scope.
+  public: std::weak_ptr<const sdf::PoseRelativeToGraph> parentPoseGraph;
+
+  /// \brief Scope name of parent Pose Relative-To Graph (world or __model__).
+  public: std::string parentPoseGraphScopeName;
+>>>>>>> sdf10
 };
 
 /////////////////////////////////////////////////
@@ -104,6 +115,62 @@ Model::~Model()
 Model::Model(const Model &_model)
   : dataPtr(new ModelPrivate(*_model.dataPtr))
 {
+<<<<<<< HEAD
+||||||| merged common ancestors
+  if (_model.dataPtr->frameAttachedToGraph)
+  {
+    this->dataPtr->frameAttachedToGraph =
+        std::make_shared<sdf::FrameAttachedToGraph>(
+            *_model.dataPtr->frameAttachedToGraph);
+  }
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+=======
+  if (_model.dataPtr->frameAttachedToGraph)
+  {
+    this->dataPtr->frameAttachedToGraph =
+        std::make_shared<sdf::FrameAttachedToGraph>(
+            *_model.dataPtr->frameAttachedToGraph);
+  }
+  if (_model.dataPtr->poseGraph)
+  {
+    this->dataPtr->poseGraph = std::make_shared<sdf::PoseRelativeToGraph>(
+        *_model.dataPtr->poseGraph);
+  }
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+>>>>>>> sdf10
 }
 
 /////////////////////////////////////////////////
@@ -329,6 +396,107 @@ Errors Model::Load(ElementPtr _sdf)
     frameNames.insert(frameName);
   }
 
+<<<<<<< HEAD
+||||||| merged common ancestors
+  // Build the graphs.
+
+  // Build the FrameAttachedToGraph if the model is not static.
+  // Re-enable this when the buildFrameAttachedToGraph implementation handles
+  // static models.
+  if (!this->Static())
+  {
+    this->dataPtr->frameAttachedToGraph
+        = std::make_shared<FrameAttachedToGraph>();
+    Errors frameAttachedToGraphErrors =
+    buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
+    errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                                frameAttachedToGraphErrors.end());
+    Errors validateFrameAttachedGraphErrors =
+      validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+    errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                                validateFrameAttachedGraphErrors.end());
+    for (auto &frame : this->dataPtr->frames)
+    {
+      frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    }
+  }
+
+  // Build the PoseRelativeToGraph
+  this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
+  Errors poseGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
+  errors.insert(errors.end(), poseGraphErrors.begin(),
+                              poseGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+=======
+  // Build the graphs.
+
+  // Build the FrameAttachedToGraph if the model is not static.
+  // Re-enable this when the buildFrameAttachedToGraph implementation handles
+  // static models.
+  if (!this->Static())
+  {
+    this->dataPtr->frameAttachedToGraph
+        = std::make_shared<FrameAttachedToGraph>();
+    Errors frameAttachedToGraphErrors =
+    buildFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph, this);
+    errors.insert(errors.end(), frameAttachedToGraphErrors.begin(),
+                                frameAttachedToGraphErrors.end());
+    Errors validateFrameAttachedGraphErrors =
+      validateFrameAttachedToGraph(*this->dataPtr->frameAttachedToGraph);
+    errors.insert(errors.end(), validateFrameAttachedGraphErrors.begin(),
+                                validateFrameAttachedGraphErrors.end());
+    for (auto &frame : this->dataPtr->frames)
+    {
+      frame.SetFrameAttachedToGraph(this->dataPtr->frameAttachedToGraph);
+    }
+  }
+
+  // Build the PoseRelativeToGraph
+  this->dataPtr->poseGraph = std::make_shared<PoseRelativeToGraph>();
+  Errors poseGraphErrors =
+  buildPoseRelativeToGraph(*this->dataPtr->poseGraph, this);
+  errors.insert(errors.end(), poseGraphErrors.begin(),
+                              poseGraphErrors.end());
+  Errors validatePoseGraphErrors =
+    validatePoseRelativeToGraph(*this->dataPtr->poseGraph);
+  errors.insert(errors.end(), validatePoseGraphErrors.begin(),
+                              validatePoseGraphErrors.end());
+  for (auto &link : this->dataPtr->links)
+  {
+    link.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &model : this->dataPtr->models)
+  {
+    Errors setPoseRelativeToGraphErrors =
+      model.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+    errors.insert(errors.end(), setPoseRelativeToGraphErrors.begin(),
+                                setPoseRelativeToGraphErrors.end());
+  }
+  for (auto &joint : this->dataPtr->joints)
+  {
+    joint.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+  for (auto &frame : this->dataPtr->frames)
+  {
+    frame.SetPoseRelativeToGraph(this->dataPtr->poseGraph);
+  }
+>>>>>>> sdf10
 
   return errors;
 }
@@ -555,6 +723,46 @@ const Model *Model::ModelByName(const std::string &_name) const
 }
 
 /////////////////////////////////////////////////
+uint64_t Model::ModelCount() const
+{
+  return this->dataPtr->models.size();
+}
+
+/////////////////////////////////////////////////
+const Model *Model::ModelByIndex(const uint64_t _index) const
+{
+  if (_index < this->dataPtr->models.size())
+    return &this->dataPtr->models[_index];
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
+bool Model::ModelNameExists(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+/////////////////////////////////////////////////
+const Model *Model::ModelByName(const std::string &_name) const
+{
+  for (auto const &m : this->dataPtr->models)
+  {
+    if (m.Name() == _name)
+    {
+      return &m;
+    }
+  }
+  return nullptr;
+}
+
+/////////////////////////////////////////////////
 const Link *Model::CanonicalLink() const
 {
   return this->CanonicalLinkAndRelativeName().first;
@@ -609,6 +817,7 @@ void Model::SetCanonicalLinkName(const std::string &_canonicalLink)
 }
 
 /////////////////////////////////////////////////
+<<<<<<< HEAD
 const std::string &Model::PlacementFrameName() const
 {
   return this->dataPtr->placementFrameName;
@@ -616,17 +825,38 @@ const std::string &Model::PlacementFrameName() const
 
 /////////////////////////////////////////////////
 void Model::SetPlacementFrameName(const std::string &_placementFrame)
+||||||| merged common ancestors
+const ignition::math::Pose3d &Model::Pose() const
+{
+  return this->RawPose();
+}
+
+/////////////////////////////////////////////////
+const ignition::math::Pose3d &Model::RawPose() const
+=======
+const ignition::math::Pose3d &Model::RawPose() const
+>>>>>>> sdf10
 {
   this->dataPtr->placementFrameName = _placementFrame;
 }
 
 /////////////////////////////////////////////////
+<<<<<<< HEAD
 const ignition::math::Pose3d &Model::RawPose() const
 {
   return this->dataPtr->pose;
 }
 
 /////////////////////////////////////////////////
+||||||| merged common ancestors
+const std::string &Model::PoseFrame() const
+{
+  return this->PoseRelativeTo();
+}
+
+/////////////////////////////////////////////////
+=======
+>>>>>>> sdf10
 const std::string &Model::PoseRelativeTo() const
 {
   return this->dataPtr->poseRelativeTo;
@@ -639,6 +869,7 @@ void Model::SetRawPose(const ignition::math::Pose3d &_pose)
 }
 
 /////////////////////////////////////////////////
+<<<<<<< HEAD
 void Model::SetPoseRelativeTo(const std::string &_frame)
 {
   this->dataPtr->poseRelativeTo = _frame;
@@ -646,6 +877,17 @@ void Model::SetPoseRelativeTo(const std::string &_frame)
 
 /////////////////////////////////////////////////
 void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
+||||||| merged common ancestors
+void Model::SetPoseFrame(const std::string &_frame)
+{
+  this->SetPoseRelativeTo(_frame);
+}
+
+/////////////////////////////////////////////////
+void Model::SetPoseRelativeTo(const std::string &_frame)
+=======
+void Model::SetPoseRelativeTo(const std::string &_frame)
+>>>>>>> sdf10
 {
   this->dataPtr->poseGraph = _graph;
   this->dataPtr->poseGraphScopeVertexName =
@@ -672,9 +914,18 @@ void Model::SetPoseRelativeToGraph(sdf::ScopedGraph<PoseRelativeToGraph> _graph)
 }
 
 /////////////////////////////////////////////////
+<<<<<<< HEAD
 void Model::SetFrameAttachedToGraph(
     sdf::ScopedGraph<FrameAttachedToGraph> _graph)
+||||||| merged common ancestors
+void Model::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+=======
+Errors Model::SetPoseRelativeToGraph(
+    std::weak_ptr<const PoseRelativeToGraph> _graph)
+>>>>>>> sdf10
 {
+<<<<<<< HEAD
   this->dataPtr->frameAttachedToGraph = _graph;
 
   auto childFrameAttachedToGraph =
@@ -691,6 +942,24 @@ void Model::SetFrameAttachedToGraph(
   {
     model.SetFrameAttachedToGraph(childFrameAttachedToGraph);
   }
+||||||| merged common ancestors
+  this->dataPtr->parentPoseGraph = _graph;
+=======
+  Errors errors;
+
+  auto graph = _graph.lock();
+  if (!graph)
+  {
+    errors.push_back({ErrorCode::POSE_RELATIVE_TO_GRAPH_ERROR,
+        "Tried to set PoseRelativeToGraph with invalid pointer."});
+    return errors;
+  }
+
+  this->dataPtr->parentPoseGraphScopeName = graph->sourceName;
+  this->dataPtr->parentPoseGraph = _graph;
+
+  return errors;
+>>>>>>> sdf10
 }
 
 /////////////////////////////////////////////////
@@ -700,8 +969,16 @@ sdf::SemanticPose Model::SemanticPose() const
       this->dataPtr->name,
       this->dataPtr->pose,
       this->dataPtr->poseRelativeTo,
+<<<<<<< HEAD
       this->dataPtr->poseGraphScopeVertexName,
       this->dataPtr->poseGraph);
+||||||| merged common ancestors
+      "world",
+      this->dataPtr->parentPoseGraph);
+=======
+      this->dataPtr->parentPoseGraphScopeName,
+      this->dataPtr->parentPoseGraph);
+>>>>>>> sdf10
 }
 
 /////////////////////////////////////////////////
