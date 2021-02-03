@@ -2,9 +2,13 @@
 <sdf version="1.5">
   <world name="default">
 
-    <include>
-      <uri>test_model</uri>
-    </include>
+    <model name="ParentModel">
+      <model name="ChildModel">
+        <include>
+          <uri>test_model</uri>
+        </include>
+      </model>
+    </model>
 
     <include>
       <uri>test_light</uri>

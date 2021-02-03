@@ -1371,3 +1371,85 @@ TEST(NestedReference, PlacementFrameElement)
     EXPECT_EQ(placementPose, pose.Inverse());
   }
 }
+
+
+//////////////////////////////////////////////////
+/// Test unnesting of a flattened 1.7 model to 1.8
+TEST(IncludesTest, Nested17To18Convert)
+{
+  // This is a valid model sdf in 1.7, which can occur from it's flattening
+  // nested models behavior
+  std::ostringstream stream;
+  stream
+    << "<sdf version='1.7'>"
+    << " <model name='ParentModel'>"
+    << "  <frame name='ChildModel::__model__' attached_to='ChildModel::L1'>"
+    << "   <pose relative_to='__model__'>1 0 1 0 0 0</pose>"
+    << "  </frame>"
+    << "  <link name='ChildModel::L1'>"
+    << "   <pose relative_to='ChildModel::__model__'>0 1 0 0 0 0</pose>"
+    << "   <visual name='v1'>"
+    << "    <geometry>"
+    << "     <sphere>"
+    << "      <radius>0.1</radius>"
+    << "     </sphere>"
+    << "    </geometry>"
+    << "   </visual>"
+    << "  </link>"
+    << "  <link name='ChildModel::L2'>"
+    << "   <pose relative_to='ChildModel::__model__'>0 0 0 0 0 0</pose>"
+    << "  </link>"
+    << "  <joint name='ChildModel::J1' type='revolute'>"
+    << "   <parent>ChildModel::L1</parent>"
+    << "   <child>ChildModel::L2</child>"
+    << "  </joint>"
+    << " </model>"
+    << "</sdf>";
+
+  sdf::SDFPtr sdfParsed(new sdf::SDF());
+  sdf::init(sdfParsed);
+  sdf::Errors errors;
+  ASSERT_TRUE(sdf::readString(stream.str(), sdfParsed, errors));
+
+  sdf::ElementPtr rootElem = sdfParsed->Root();
+  ASSERT_NE(nullptr, rootElem);
+
+  // it is parsed to 1.8
+  EXPECT_EQ("1.8", rootElem->Get<std::string>("version"));
+
+  sdf::ElementPtr parentModelElem = rootElem->GetElement("model");
+  ASSERT_NE(nullptr, parentModelElem);
+  EXPECT_EQ(parentModelElem->Get<std::string>("name"), "ParentModel");
+
+  sdf::ElementPtr link1Elem = parentModelElem->GetElement("link");
+  ASSERT_NE(nullptr, link1Elem);
+  EXPECT_EQ(link1Elem->Get<std::string>("name"), "ChildModel::L1");
+
+  sdf::ElementPtr link2Elem = link1Elem->GetNextElement("link");
+  ASSERT_NE(nullptr, link2Elem);
+  EXPECT_EQ(link2Elem->Get<std::string>("name"), "ChildModel::L2");
+
+  sdf::ElementPtr jointElem = parentModelElem->GetElement("joint");
+  ASSERT_NE(nullptr, jointElem);
+  EXPECT_EQ(jointElem->Get<std::string>("name"), "ChildModel::J1");
+
+  // The root and world were version 1.5
+  EXPECT_EQ("1.7", sdfParsed->OriginalVersion());
+  EXPECT_EQ("1.7", rootElem->OriginalVersion());
+
+  // The included models were version 1.6
+  EXPECT_EQ("1.7", parentModelElem->OriginalVersion());
+  EXPECT_EQ("1.7", link1Elem->OriginalVersion());
+  EXPECT_EQ("1.7", link2Elem->OriginalVersion());
+  EXPECT_EQ("1.7", jointElem->OriginalVersion());
+
+  sdf::Root root;
+  errors = root.Load(sdfParsed);
+  for (auto e : errors)
+    std::cout << e.Message() << std::endl;
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_NE(nullptr, root.Model());
+  EXPECT_EQ(1u, root.Model()->ModelCount());
+  EXPECT_NE(nullptr, root.Model()->ModelByIndex(0u));
+}
